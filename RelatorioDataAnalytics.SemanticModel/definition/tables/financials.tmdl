@@ -1,0 +1,209 @@
+table financials
+	lineageTag: 7fa1545c-dad2-4793-a55a-5d8d32c52752
+
+	column Segment
+		dataType: string
+		lineageTag: fb2d4e32-b9db-4d52-9c81-7836a1afca42
+		summarizeBy: none
+		sourceColumn: Segment
+
+		annotation SummarizationSetBy = Automatic
+
+	column Country
+		dataType: string
+		dataCategory: Country
+		lineageTag: d8f01a03-c9fb-4e31-a362-4d9922da5937
+		summarizeBy: none
+		sourceColumn: Country
+
+		annotation SummarizationSetBy = Automatic
+
+	column Product
+		dataType: string
+		lineageTag: 75300e9a-a1ca-4ab2-bea5-76996aea82e0
+		summarizeBy: none
+		sourceColumn: Product
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Discount Band'
+		dataType: string
+		lineageTag: 74a6a9f5-e29f-45f5-a40a-2d9d56d225ff
+		summarizeBy: none
+		sourceColumn: Discount Band
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Units Sold'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: d23352d8-8d93-4921-bb3a-e09b541d7f84
+		summarizeBy: sum
+		sourceColumn: Units Sold
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Manufacturing Price'
+		dataType: double
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: c0f296ab-0c6d-41ba-a08d-32cf24a0e9fe
+		summarizeBy: sum
+		sourceColumn: Manufacturing Price
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column 'Sale Price'
+		dataType: double
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: e6692bb0-9d39-4b4a-ba76-0e372cf0d41c
+		summarizeBy: sum
+		sourceColumn: Sale Price
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column 'Gross Sales'
+		dataType: double
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: d353caad-55ba-4742-ae33-3c4db45fbd61
+		summarizeBy: sum
+		sourceColumn: Gross Sales
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Discounts
+		dataType: double
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: e1edd27e-4f26-4a12-a306-2fafcc5d45cf
+		summarizeBy: sum
+		sourceColumn: Discounts
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Sales
+		dataType: double
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: aff17f0d-d603-48fa-8fa5-1f5c3b5f25fe
+		summarizeBy: sum
+		sourceColumn: Sales
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column COGS
+		dataType: double
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 33455e9f-bdf5-4944-ac34-bdc2fb95a7e9
+		summarizeBy: sum
+		sourceColumn: COGS
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Profit
+		dataType: double
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 323fb7bd-37c2-46cb-9cb3-4d90a4443a54
+		summarizeBy: sum
+		sourceColumn: Profit
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Date
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: f098693f-d521-44de-b2e4-729602509a99
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Month Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: 6a621dd1-0ab2-4822-bc63-957232719356
+		summarizeBy: none
+		sourceColumn: Month Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Name'
+		dataType: string
+		lineageTag: 6fa44e42-fa5f-46ce-a367-76d9be711735
+		summarizeBy: none
+		sourceColumn: Month Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: f9c83697-9148-482f-aa8d-069b50c9a4c9
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Região' = SWITCH(financials[Country], "Canada", "América do Norte", "Mexico", "América do Norte", "United States of America", "América do Norte", "France", "Europa", "Germany", "Europa", "Outros")
+		dataType: string
+		lineageTag: ff7815dc-8da5-41b6-883c-3b2b202cd3e3
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Segmento (grupo)' = SWITCH(financials[Segment], "Government", "Grandes Contas", "Enterprise", "Grandes Contas", "PMEs e Parceiros")
+		dataType: string
+		lineageTag: f6b024ee-f015-407d-8f20-a291cdcc6afa
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Faixa de Unidades' = INT(financials[Units Sold] / 500) * 500
+		dataType: int64
+		formatString: #,0
+		isHidden
+		lineageTag: 3d5fef51-3755-4f19-9dfd-319ae3461f1a
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Faixa de Unidades (rótulo)' = FORMAT(financials[Faixa de Unidades], "#,0") & " a " & FORMAT(financials[Faixa de Unidades] + 499, "#,0")
+		dataType: string
+		lineageTag: c7a5fa11-4738-44e5-83e9-db31142dc27e
+		summarizeBy: none
+		sortByColumn: 'Faixa de Unidades'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition financials = m
+		mode: import
+		source =
+				let
+				    Fonte = Excel.Workbook(File.Contents(CaminhoArquivo), null, true),
+				    financials_Table = Fonte{[Item="financials",Kind="Table"]}[Data],
+				    TiposAlterados = Table.TransformColumnTypes(financials_Table, {
+				        {"Segment", type text}, {"Country", type text}, {"Product", type text}, {"Discount Band", type text},
+				        {"Units Sold", type number}, {"Manufacturing Price", type number}, {"Sale Price", type number},
+				        {"Gross Sales", type number}, {"Discounts", type number}, {" Sales", type number},
+				        {"COGS", type number}, {"Profit", type number}, {"Date", type date},
+				        {"Month Number", Int64.Type}, {"Month Name", type text}, {"Year", Int64.Type}
+				    }),
+				    // A coluna original vem com um espaço no início (" Sales")
+				    ColunasRenomeadas = Table.RenameColumns(TiposAlterados, {{" Sales", "Sales"}})
+				in
+				    ColunasRenomeadas
+
+	annotation PBI_ResultType = Table

@@ -1,0 +1,3 @@
+relationship 1882fbe4-210d-4d22-af43-8989b8426ac8
+	fromColumn: financials.Date
+	toColumn: dCalendario.Data

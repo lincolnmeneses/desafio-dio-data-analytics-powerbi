@@ -1,0 +1,113 @@
+table Medidas
+	lineageTag: 27a1a081-d9d9-4a29-9b0e-283d13163f96
+
+	measure 'Total Vendas' = SUM(financials[Sales])
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Vendas
+		lineageTag: 2bc70839-3652-4b9f-a2ae-205574a15216
+
+	measure 'Vendas Brutas' = SUM(financials[Gross Sales])
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Vendas
+		lineageTag: 7b1ef198-e472-45ad-b5ca-722062d9dcd5
+
+	measure 'Unidades Vendidas' = SUM(financials[Units Sold])
+		formatString: #,0
+		displayFolder: Vendas
+		lineageTag: 7bdf97b2-e282-41e9-ac98-49dc84da03a4
+
+	measure 'Total Descontos' = SUM(financials[Discounts])
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Vendas
+		lineageTag: 38aa43b2-ec5b-4294-bdee-8927d18061fa
+
+	measure '% Desconto' = DIVIDE([Total Descontos], [Vendas Brutas])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Vendas
+		lineageTag: 766f2355-fa99-449d-b9f1-c192d591c689
+
+	measure 'Custo (COGS)' = SUM(financials[COGS])
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Lucro
+		lineageTag: a5a87209-aeb9-46e8-af5d-ae9b3471c2bb
+
+	measure 'Lucro Total' = SUM(financials[Profit])
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Lucro
+		lineageTag: 9e9c71f9-3a72-4ce1-863a-babbe0b23613
+
+	measure 'Margem de Lucro' = DIVIDE([Lucro Total], [Total Vendas])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Lucro
+		lineageTag: 7948d08e-99a3-40e2-9759-c2b71f7daa3c
+
+	measure 'Qtd Vendas' = COUNTROWS(financials)
+		formatString: #,0
+		displayFolder: Analytics
+		lineageTag: 5fa07f7a-dc2e-4b0e-9e8b-45d917992fee
+
+	measure 'Ticket Médio' = DIVIDE([Total Vendas], [Qtd Vendas])
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Analytics
+		lineageTag: 5ee52b65-d9c8-4efd-9312-434cacd81ef9
+
+	measure 'Média de Unidades por Venda' = AVERAGE(financials[Units Sold])
+		formatString: #,0
+		displayFolder: Analytics
+		lineageTag: 8aecca90-465f-48e5-8f09-135d3c0d28f2
+
+	measure 'Vendas TOP 3 Produtos' = VAR _top = TOPN(3, ALLSELECTED(financials[Product]), [Total Vendas]) RETURN CALCULATE([Total Vendas], KEEPFILTERS(_top))
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Analytics
+		lineageTag: 4123226f-8478-4181-8a32-200797b88412
+
+	measure 'TOP 3 Produtos' = CONCATENATEX(TOPN(3, ALLSELECTED(financials[Product]), [Total Vendas]), financials[Product], ", ", [Total Vendas], DESC)
+		displayFolder: Analytics
+		lineageTag: 541ab5f5-da72-461a-bc1f-831d2436c905
+
+	measure '% Vendas TOP 3 Produtos' = DIVIDE(CALCULATE([Total Vendas], TOPN(3, ALLSELECTED(financials[Product]), [Total Vendas])), CALCULATE([Total Vendas], ALLSELECTED(financials[Product])))
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Analytics
+		lineageTag: 746799e4-9f39-4e21-8828-4d73486ed164
+
+	measure 'País com Mais Vendas' = CONCATENATEX(TOPN(1, ALLSELECTED(financials[Country]), [Total Vendas]), financials[Country], ", ")
+		displayFolder: Analytics
+		lineageTag: 8cfd2abf-84dd-42df-af80-24c418e06bbe
+
+	measure 'Mês com Mais Vendas' = CONCATENATEX(TOPN(1, ALLSELECTED(dCalendario[Mês Ano], dCalendario[Ano Mês Num]), [Total Vendas]), dCalendario[Mês Ano], ", ")
+		displayFolder: Analytics
+		lineageTag: f79416d1-0063-4507-940f-5d143a9e6655
+
+	measure 'Vendas TOP 5 Meses' = VAR _top = TOPN(5, ALLSELECTED(dCalendario[Mês Ano], dCalendario[Ano Mês Num]), [Total Vendas]) RETURN CALCULATE([Total Vendas], KEEPFILTERS(_top))
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Analytics
+		lineageTag: de5288bc-e38e-483d-98e0-7490aaf93355
+
+	measure 'Vendas América do Norte' = CALCULATE([Total Vendas], financials[Região] = "América do Norte")
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Analytics
+		lineageTag: e3a9173a-08b3-45ef-97f9-b0462c024854
+
+	measure 'Vendas Europa' = CALCULATE([Total Vendas], financials[Região] = "Europa")
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Analytics
+		lineageTag: a2883444-092d-409f-9c99-c035921a4594
+
+	column Coluna
+		dataType: string
+		isHidden
+		lineageTag: a6cc3717-07d9-463e-840d-559b16999670
+		summarizeBy: none
+		sourceColumn: Coluna
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Medidas = m
+		mode: import
+		source =
+				let
+				    Fonte = #table(type table [Coluna = text], {})
+				in
+				    Fonte
+
+	annotation PBI_ResultType = Table

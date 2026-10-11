@@ -1,0 +1,130 @@
+table dCalendario
+	dataCategory: Time
+	lineageTag: 792e55f0-f94a-4292-9e16-a0ac3cc22006
+
+	column Data
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		isKey
+		lineageTag: 35bdfdc7-7c05-4847-9a75-138bffd3e43d
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Ano
+		dataType: int64
+		formatString: 0
+		lineageTag: 88eb2902-e76f-4cf6-973e-e0460a95b53e
+		summarizeBy: none
+		sourceColumn: Ano
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Mês Num'
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: e4f549cc-b1c8-4d1d-ab3c-1021d98c3ebb
+		summarizeBy: none
+		sourceColumn: Mês Num
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Mês'
+		dataType: string
+		lineageTag: 86bd990b-d543-402e-90cf-d859a68d6a86
+		summarizeBy: none
+		sortByColumn: 'Mês Num'
+		sourceColumn: Mês
+
+		annotation SummarizationSetBy = Automatic
+
+	column Trimestre
+		dataType: string
+		lineageTag: e7887cd8-1867-4781-adb8-053271c0511b
+		summarizeBy: none
+		sourceColumn: Trimestre
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Ano Trimestre'
+		dataType: string
+		lineageTag: 3aa43d17-5c8a-4ee1-ae21-06637e627188
+		summarizeBy: none
+		sourceColumn: Ano Trimestre
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Ano Mês Num'
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: 6d76c023-356f-4100-a2e4-3eab2178f41d
+		summarizeBy: none
+		sourceColumn: Ano Mês Num
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Mês Ano'
+		dataType: string
+		lineageTag: 1a9b54e7-0507-43fe-8e9c-21c7f88c13d3
+		summarizeBy: none
+		sortByColumn: 'Ano Mês Num'
+		sourceColumn: Mês Ano
+
+		annotation SummarizationSetBy = Automatic
+
+	column Semestre
+		dataType: string
+		lineageTag: cd741282-dbbd-49b3-919d-3560f664b6b8
+		summarizeBy: none
+		sourceColumn: Semestre
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Ano Semestre Num'
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: 91322e67-60a8-4815-8ba6-245253a22375
+		summarizeBy: none
+		sourceColumn: Ano Semestre Num
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Ano Semestre'
+		dataType: string
+		lineageTag: 67522c4c-0736-4570-a1e8-f745897f33d3
+		summarizeBy: none
+		sortByColumn: 'Ano Semestre Num'
+		sourceColumn: Ano Semestre
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dCalendario = m
+		mode: import
+		source =
+				let
+				    Fonte = financials,
+				    Inicio = Date.StartOfYear(List.Min(Fonte[Date])),
+				    Fim = Date.EndOfYear(List.Max(Fonte[Date])),
+				    ListaDatas = List.Dates(Inicio, Duration.Days(Fim - Inicio) + 1, #duration(1, 0, 0, 0)),
+				    Tabela = #table(type table [Data = date], List.Transform(ListaDatas, each {_})),
+				    NomesMeses = {"Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"},
+				    Ano = Table.AddColumn(Tabela, "Ano", each Date.Year([Data]), Int64.Type),
+				    MesNum = Table.AddColumn(Ano, "Mês Num", each Date.Month([Data]), Int64.Type),
+				    Mes = Table.AddColumn(MesNum, "Mês", each NomesMeses{[Mês Num] - 1}, type text),
+				    Trimestre = Table.AddColumn(Mes, "Trimestre", each "T" & Text.From(Date.QuarterOfYear([Data])), type text),
+				    AnoTrimestre = Table.AddColumn(Trimestre, "Ano Trimestre", each Text.From([Ano]) & " " & [Trimestre], type text),
+				    AnoMesNum = Table.AddColumn(AnoTrimestre, "Ano Mês Num", each [Ano] * 100 + [Mês Num], Int64.Type),
+				    MesAno = Table.AddColumn(AnoMesNum, "Mês Ano", each [Mês] & "/" & Text.End(Text.From([Ano]), 2), type text),
+				    Semestre = Table.AddColumn(MesAno, "Semestre", each if [Mês Num] <= 6 then "1º Semestre" else "2º Semestre", type text),
+				    AnoSemestreNum = Table.AddColumn(Semestre, "Ano Semestre Num", each [Ano] * 10 + (if [Mês Num] <= 6 then 1 else 2), Int64.Type),
+				    AnoSemestre = Table.AddColumn(AnoSemestreNum, "Ano Semestre", each Text.From([Ano]) & " - " & Text.Start([Semestre], 2) & " Sem", type text)
+				in
+				    AnoSemestre
+
+	annotation PBI_ResultType = Table
